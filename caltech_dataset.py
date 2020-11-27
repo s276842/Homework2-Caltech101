@@ -33,6 +33,7 @@ class Caltech(VisionDataset):
         self.data = []
         self.categories_distr = {}
         self.labels = {cat:i for i,cat in enumerate(self.categories)}
+        self.__int_labels = {i:cat for i, cat in enumerate(self.categories)}
 
         with open(self.splitfile_path) as f:
             for line in tqdm(f):
@@ -49,8 +50,6 @@ class Caltech(VisionDataset):
 
         np.random.shuffle(self.data)
 
-    def labels(self):
-        return self.labels
 
     def preprocess(self):
         self.data = []
@@ -90,10 +89,12 @@ class Caltech(VisionDataset):
     def __str__(self):
         return f"Loaded {self.split}set ({self.__len__()} entries):\n"+self.categories_distr.__str__()
 
+    def int2label(self, val):
+        return self.__int_labels[val]
+
 if __name__ == '__main__':
     cal = Caltech(r"C:\Users\Kaloo\Documents\pycharm_projects\MLDL_hw2\Caltech101", split='train')
     print(cal)
 
     img, lab = cal[0]
-    labels_dict = cal.labels()
-    print(f"Image 0 class {labels_dict[lab]}")
+    print(f"Image 0 class {lab}")
