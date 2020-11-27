@@ -51,6 +51,7 @@ class Caltech(VisionDataset):
         np.random.shuffle(self.data)
 
 
+
     def preprocess(self):
         self.data = []
         for img in self.imgs:
