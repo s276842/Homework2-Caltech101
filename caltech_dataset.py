@@ -22,9 +22,7 @@ class Caltech(VisionDataset):
     def __init__(self, root, split='train', transform=None, target_transform=None):
         super(Caltech, self).__init__(root, transform=transform, target_transform=target_transform)
 
-        self.split = split # This defines the split you are going to use
-                           # (split files are called 'train.txt' and 'test.txt')
-
+        self.split = split
         self.transform = transform
         self.target_transform = target_transform
 
@@ -34,7 +32,7 @@ class Caltech(VisionDataset):
         self.categories.remove("BACKGROUND_Google")
         self.data = []
         self.categories_distr = {}
-        self.category_label = {cat:i for i,cat in enumerate(self.categories)}
+        self.labels = {cat:i for i,cat in enumerate(self.categories)}
 
         with open(self.splitfile_path) as f:
             for line in tqdm(f):
@@ -44,8 +42,7 @@ class Caltech(VisionDataset):
                 try:
                     label, img_path = line.split('/')
                     line = line.strip()
-                    img = pil_loader(os.path.join(self.dataset_path, line))
-                    self.data.append([img, label])
+                    self.data.append([os.path.join(self.dataset_path, line), self.labels[label]])
                     self.categories_distr[label] = self.categories_distr.get(label,0) + 1
                 except Exception as e:
                     print(str(e))
@@ -53,7 +50,7 @@ class Caltech(VisionDataset):
         np.random.shuffle(self.data)
 
     def labels(self):
-        return self.category_label
+        return self.labels
 
     def preprocess(self):
         self.data = []
@@ -72,18 +69,15 @@ class Caltech(VisionDataset):
             tuple: (sample, target) where target is class_index of the target class.
         '''
 
-        image, label = self.data[index] # Provide a way to access image and label via index
-                                        # Image should be a PIL Image
-                                        # label can be int
-
+        img_path, label = self.data[index]  # Provide a way to access image and label via index
+                                            # Image should be a PIL Image
+                                            # label can be int
+        img = pil_loader(img_path)
         # Applies preprocessing when accessing the image
         if self.transform is not None:
-            image = self.transform(image)
+            img = self.transform(img)
 
-        if label_int:
-            return image, self.category_label[label]
-
-        return image, label
+        return img, label
 
     def __len__(self):
         '''
