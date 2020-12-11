@@ -90,3 +90,7 @@ if __name__ == '__main__':
     plt.show()
 
     print(f"Label: {set.int_to_label(target)}")
+# for model_name in __all__:
+#     input_sizes[model_name] = [3, 224, 224]
+#     means[model_name] = [0.485, 0.456, 0.406]
+#     stds[model_name] = [0.229, 0.224, 0.225]
